@@ -37,7 +37,7 @@ password = st.text_input("비밀번호를 입력하세요", type="password")
 submit_button = st.button("제출")
 
 if submit_button:
-    if password == '2179':
+    if password == '2179!!':
         st.success("비밀번호가 맞습니다. 대시보드를 확인하세요.")
         st.subheader("학생 답안 현황")
 
