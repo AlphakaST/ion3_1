@@ -7,7 +7,7 @@ import mysql.connector
 from openai import OpenAI
 
 st.set_page_config(
-    page_title="이온과 앙금 생성 반응",
+    page_title="물질이 뜨고 가라앉는 성질",
     page_icon="./image/alpaca.jpg",
     layout="wide"
 )
@@ -45,19 +45,19 @@ def read_existing_data():
 existing_data = read_existing_data()
 
 hints = {
-    "1": "힌트: (+)전하와 (-)전하의 총량을 비교해 볼까요?",
-    "2": "힌트: 원자핵의 전하량은 원소 번호와 동일합니다!",
-    "3": "힌트: (-)극과 (+)극에는 각각 어떤 이온이 이동할까요?",
-    "4": "힌트: Ca2+와 CO32-는 앙금 생성을 합니다. 나머지는 어떻게 될까요?",
-    "5": "힌트: 생성된 앙금은 납과 아이오딘으로 구성되었고, 전기는 이온의 존재 유무와 관련 있습니다!"
+    "1": "힌트: 밀도의 공식을 기억해 보세요!",
+    "2": "힌트: 혼합물의 밀도는 일정한가요? 일정하지 않다면 그 이유는?",
+    "3": "힌트: 밀도 = 질량/부피 니까 이를 이용해 봅시다 :)",
+    "4": "힌트: 뜨고 가라앉는 현상과 밀도의 관계를 생각해 봅시다!",
+    "5": "힌트: 밀도는 물질의 특성이죠?"
 }
 
 example_answers = {
-    "1": "원자는 (+)전하량과 (-)전하량의 총량이 같기 때문에 중성이다. 그리고 이온이란 원자에서 전자를 얻거나 잃어서 생긴 물질이다.",
-    "2": "Ca2+이다. 원자핵의 전하량이 20이라는 것은 원소 번호가 20번이므로, Ca(칼슘)이고, 잃은 전자수가 2개 이므로 Ca2+이다.",
-    "3": "(-)극에는 나트륨 이온(혹은 Na+)가 이동하고, (+)극에는 염화 이온(혹은 Cl-)이 이동한다. 따라서 전기가 통한다.",
-    "4": "반응 결과, 칼슘 이온(혹은 Ca2+)과 탄산 이온(혹은 CO32- 혹은 CO3^2-)이 반응하여 탄산 칼슘(혹은 CaCO3)이 생성된다. 추가적으로 나트륨 이온(혹은 Na+)과 염화 이온(혹은 Cl-)은 반응하지 않고 혼합 용액에 남아 있다.",
-    "5": "생성된 앙금은 질산 납(혹은 PbI2)이다. 혼합 용액에는 전기가 통한다. 그 까닭은, 반응에 참여하지 않은 질산 이온(혹은 NO3-)과 칼륨 이온(K+)이 남아 있기 때문이다."
+    "1": "밀도란 어떤 물질의 부피를 질량으로 나눈 값이다.",
+    "2": "혼합물의 밀도는 성분 물질의 혼합 비율에 따라 달라진다.",
+    "3": "고체의 밀도는 0.5 이다. 부피는 24cm^3이고, 질량은 12g이므로 밀도 공식에 따라 0.5가 된다.",
+    "4": "(라)이다. 물의 밀도가 1이므로, 1보다 밀도가 작은 물질은 (라)이다. 혹은, (라)의 밀도가 0.8이므로 물의 밀도보다 낮아 물에 뜨는 물질은 (라)이다.",
+    "5": "(나)와 (다)이다. 밀도는 물질의 특성이므로, 밀도 값이 같은 (나)와 (다)가 같은 물질일 것으로 예상된다."
 }
 
 # 힌트 상태 초기화
@@ -68,7 +68,7 @@ with st.form(key="Feedback_form"):
     student_id = st.text_input("**학번을 입력하세요**", placeholder="예: 1학년 1반 5번 -> 10105, 1학년 1반 30번 -> 10130)")
 
     # st.image("number1.jpg", caption="문제1", use_column_width=True)
-    answer1 = st.text_area("**1. 원자가 중성인 이유는 무엇인지, 그리고 이온이란 무엇인지 서술하시오.**")
+    answer1 = st.text_area("**1. 밀도란 무엇인지 서술하시오.**")
     
     
     # 문제 1에 대한 힌트
@@ -78,8 +78,8 @@ with st.form(key="Feedback_form"):
     if st.session_state.show_hints[0]:
         st.write(hints["1"])
 
-    # st.image("number2.jpg", caption="문제2", use_column_width=True)
-    answer2 = st.text_area("**2. 원자핵의 전하량이 20이고, 잃은 전자수가 2개일 때, 해당 이온의 실제 이온식을 쓰고, 그 과정을 서술하시오.**")
+    st.image("number2.jpg", caption="문제2", use_column_width=True)
+    answer2 = st.text_area("**2. 소금물의 밀도에 따른 달걀의 위치를 보고 알 수 있는 사실을 '혼합물', '밀도' 용어를 넣어 서술하시오.**")
     
     # 문제 2에 대한 힌트
     submit_button2 = st.form_submit_button(label='힌트2')
@@ -88,8 +88,8 @@ with st.form(key="Feedback_form"):
     if st.session_state.show_hints[1]:
         st.write(hints["2"])
 
-    st.image("number3.jpg", caption="문제3", use_column_width=True)
-    answer3 = st.text_area("**3. 그림은 염화 나트륨 수용액에 (-)극과 (+)극의 전원을 연결했을 때의 모습이다. 수용액에는 어떤 일이 발생하는지 서술하시오.**")
+    # st.image("number3.jpg", caption="문제3", use_column_width=True)
+    answer3 = st.text_area("**3. 가로 4cm, 세로 2cm, 높이 3cm인 직육면제 모양의 고체 질량을 측정하였더니, 12g이었다. 이 고체의 밀도는 몇 g/cm^3인지 과정을 포함하여 구하시오.**")
     
     # 문제 3에 대한 힌트
     submit_button3 = st.form_submit_button(label='힌트3')
@@ -99,7 +99,7 @@ with st.form(key="Feedback_form"):
         st.write(hints["3"])
 
     st.image("number4.jpg", caption="문제4", use_column_width=True)
-    answer4 = st.text_area("**4. 그림은 염화 칼슘 수용액과 탄산 나트륨 수용액을 섞어 혼합 용액을 만드는 과정이다. 반응 결과를 2줄 이내로 서술하시오.**")
+    answer4 = st.text_area("**4. 표는 물질 (가)~(라)의 질량과 부피를 측정한 결과이다. (1) 물에 넣었을 때 뜨는 물질을 고르시오.**")
     
     # 문제 4에 대한 힌트
     submit_button4 = st.form_submit_button(label='힌트4')
@@ -108,8 +108,8 @@ with st.form(key="Feedback_form"):
     if st.session_state.show_hints[3]:
         st.write(hints["4"])
 
-    st.image("number5.jpg", caption="문제5", use_column_width=True)
-    answer5 = st.text_area("**5. 그림은 질산 납 수용액과 질산 나트륨 수용액을 섞었을 때의 모습이다. 생성된 앙금을 쓰시오. 또한, 혼합 용액에 전기가 통하는지 안 통하는지 쓰고, 그 까닭에 대해서도 서술하시오.**")
+    # st.image("number5.jpg", caption="문제5", use_column_width=True)
+    answer5 = st.text_area("**5. 4번의 표를 보고, (가)~(라) 중 같은 물질일 것으로 예상되는 것을 고르고, 이유를 쓰시오.**")
     
     # 문제 5에 대한 힌트
     submit_button5 = st.form_submit_button(label='힌트5')
